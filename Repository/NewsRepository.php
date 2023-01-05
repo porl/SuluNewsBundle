@@ -32,21 +32,39 @@ class NewsRepository extends EntityRepository implements DataProviderRepositoryI
         $this->getEntityManager()->flush();
     }
 
-    public function getPublishedNews(): array
+    private function getPublishedNewsQueryBuilder(): \Doctrine\ORM\QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('n')
+
+        return $qb->select('n')
             ->from('NewsBundle:News', 'n')
             ->where('n.enabled = 1')
             ->andWhere('n.publishedAt <= :created')
-            ->setParameter('created', date('Y-m-d H:i:s'))
-            ->orderBy('n.publishedAt', 'DESC')
-        ;
+            ->setParameter('created', \date('Y-m-d H:i:s'))
+            ->orderBy('n.publishedAt', 'DESC');
+    }
+
+    public function getPublishedNews(): array
+    {
+        $qb = $this->getPublishedNewsQueryBuilder();
 
         $news = $qb->getQuery()->getResult();
 
         if (!$news) {
             return [];
+        }
+
+        return $news;
+    }
+
+    public function getLatestPublishedNews(): ?News
+    {
+        $qb = $this->getPublishedNewsQueryBuilder();
+
+        $news = $qb->setMaxResults(1)->getQuery()->getOneOrNullResult();
+
+        if (!$news) {
+            return null;
         }
 
         return $news;
@@ -71,8 +89,8 @@ class NewsRepository extends EntityRepository implements DataProviderRepositoryI
         $this->getEntityManager()->remove(
             $this->getEntityManager()->getReference(
                 $this->getClassName(),
-                $id
-            )
+                $id,
+            ),
         );
         $this->getEntityManager()->flush();
     }
