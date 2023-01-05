@@ -34,6 +34,8 @@ class NewsTwigExtension extends AbstractExtension
     {
         return [
             new TwigFunction('sulu_resolve_news', [$this, 'resolveNewsFunction']),
+            new TwigFunction('sulu_resolve_news_list', [$this, 'resolveNewsListFunction']),
+            new TwigFunction('sulu_resolve_news_latest', [$this, 'resolveNewsLatestFunction']),
         ];
     }
 
@@ -51,5 +53,18 @@ class NewsTwigExtension extends AbstractExtension
         $this->cache->save($id, $news);
 
         return $news;
+    }
+
+    /**
+     * @return array<News>
+     */
+    public function resolveNewsListFunction(): array
+    {
+        return $this->newsRepository->getPublishedNews();
+    }
+
+    public function resolveNewsLatestFunction(): ?News
+    {
+        return $this->newsRepository->getLatestPublishedNews();
     }
 }
