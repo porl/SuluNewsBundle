@@ -3,12 +3,17 @@
 declare(strict_types=1);
 
 /*
- * This file is part of TheCadien/SuluNewsBundle.
+ * This file is based on that of TheCadien/SuluNewsBundle.
  *
- * (c) Oliver Kossin
+ * Original version (c) Oliver Kossin
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
+ *
+ * This is an override to make the website controller match the
+ * Twig naming convention used in other parts of the site (and
+ * other sites). It is mainly used for the preview in the admin
+ * area as I use a custom controller for the front end.
  */
 
 namespace TheCadien\Bundle\SuluNewsBundle\Controller;
@@ -32,18 +37,18 @@ class NewsWebsiteController extends AbstractController
 
         if ($partial) {
             $content = $this->renderBlock(
-                'news/index.html.twig',
+                'news/show.html.twig',
                 'content',
                 ['news' => $news]
             );
         } elseif ($preview) {
             $content = $this->renderPreview(
-                'news/index.html.twig',
+                'news/show.html.twig',
                 ['news' => $news]
             );
         } else {
             $content = $this->renderView(
-                'news/index.html.twig',
+                'news/show.html.twig',
                 ['news' => $news]
             );
         }
